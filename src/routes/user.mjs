@@ -2,22 +2,11 @@ import express from "express"
 import {query, body, checkSchema, validationResult, matchedData} from "express-validator"
 import { Router } from "express"
 import { createUserValidationSchemas } from "../utils/validationSchemas.mjs"
+import { mockUsers } from "../utils/mockUser.mjs"
 
 const router = Router()
 
-const mockUsers = [{
-    "id": 1,
-    "username": "jack",
-    "password": "123344"
-},{
-    "id": 2,
-    "username": "Adam",
-    "password": "123344"
-},{
-    "id": 3,
-    "username": "Jonh",
-    "password": "123344"
-}]
+
 
 const resolveIndex = (request,response,next) =>{
     const {body, params:{id}} = request
@@ -43,6 +32,13 @@ router.get("/api/users/:id", (request,response) =>{
 router.get("/api/users", 
 query("filter").isString().notEmpty().isLength({min:5,max:10}).withMessage("String is lenght to 5-10"),
 (request,response) =>{
+    request.sessionStore.get(request.session.id, (err, sessionData)=>{
+        if (err) {
+            console.log(err)
+            throw err
+        }
+        console.log(sessionData)
+    })
     const result = validationResult(request)
     console.log(result)
     const {query:{filter,value}} = request
